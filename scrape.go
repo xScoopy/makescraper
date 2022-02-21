@@ -6,6 +6,13 @@ import (
 	"github.com/gocolly/colly"
 )
 
+type scrapeData struct {
+	Name string
+	Price float32
+	ReleaseDate string
+	ReviewScore string
+}
+
 // main() contains code adapted from example found in Colly's docs:
 // http://go-colly.org/docs/examples/basic/
 func main() {
