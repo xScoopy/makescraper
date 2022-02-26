@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"github.com/gocolly/colly"
@@ -13,6 +15,11 @@ type GameInfo struct {
 	ReleaseDate string
 }
 
+func createJson(games []GameInfo){
+	jsonFile, _ := json.MarshalIndent(games, "", " ")
+	_ = ioutil.WriteFile("output.json", jsonFile, 0644)
+}
+
 // main() contains code adapted from example found in Colly's docs:
 // http://go-colly.org/docs/examples/basic/
 func main() {
@@ -20,14 +27,15 @@ func main() {
 	c := colly.NewCollector()
 	c.SetRequestTimeout(120 * time.Second)
 
-	// games := make([]GameInfo, 0)
+	games := make([]GameInfo, 0)
 
 	c.OnHTML("a.search_result_row", func(e *colly.HTMLElement) {
 		e.ForEach("div.responsive_search_name_combined", func(i int, h *colly.HTMLElement){
-			
-			fmt.Println(h.ChildText("span.title"))
-			fmt.Println(h.ChildText("div.search_released"))
-			fmt.Println(h.ChildText("div.search_price"))
+			newGame := GameInfo{}
+			newGame.Name = h.ChildText("span.title")
+			newGame.ReleaseDate = h.ChildText("div.search_released")
+			newGame.Price = h.ChildText("div.search_price")
+			games = append(games, newGame)
 		} )
 	})
 	
@@ -45,5 +53,6 @@ func main() {
 
 	c.Visit("https://store.steampowered.com/search/?filter=topsellers")
 
+	createJson(games)
 }
 
