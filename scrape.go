@@ -7,11 +7,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type gameInfo struct {
+type GameInfo struct {
 	Name string
 	Price float32
 	ReleaseDate string
-	ReviewScore string
 }
 
 // main() contains code adapted from example found in Colly's docs:
@@ -21,13 +20,13 @@ func main() {
 	c := colly.NewCollector()
 	c.SetRequestTimeout(120 * time.Second)
 
-	// // On every a element which has href attribute call callback
-	// c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-    //             link := e.Attr("href")
+	// games := make([]GameInfo, 0)
 
-	// 	// Print link
-    //             fmt.Printf("Link found: %q -> %s\n", e.Text, link)
-	// })
+	c.OnHTML("a.search_result_row", func(e *colly.HTMLElement) {
+		e.ForEach("div.responsive_search_name_combined", func(i int, h *colly.HTMLElement){
+			fmt.Println(h.ChildText("span.title"))
+		} )
+	})
 	
 	c.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting", r.URL)
@@ -44,3 +43,4 @@ func main() {
 	c.Visit("https://store.steampowered.com/search/?filter=topsellers")
 
 }
+
