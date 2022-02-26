@@ -9,7 +9,7 @@ import (
 
 type GameInfo struct {
 	Name string
-	Price float32
+	Price string
 	ReleaseDate string
 }
 
@@ -24,7 +24,10 @@ func main() {
 
 	c.OnHTML("a.search_result_row", func(e *colly.HTMLElement) {
 		e.ForEach("div.responsive_search_name_combined", func(i int, h *colly.HTMLElement){
+			
 			fmt.Println(h.ChildText("span.title"))
+			fmt.Println(h.ChildText("div.search_released"))
+			fmt.Println(h.ChildText("div.search_price"))
 		} )
 	})
 	
